@@ -1,18 +1,13 @@
 {
   "name": "horizon-frontend",
-  "version": "1.0.0",
-  "description": "Front-end repository",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/HorizonClouds/horizon-frontend.git"
-  },
+  "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:horizon": "node dist/horizon-frontend/server/server.mjs",
-    "start": "node server.js",
-    "build": "ng build"
+    "serve:ssr:horizon-frontend": "node dist/horizon-frontend/server/server.mjs"
   },
   "private": true,
   "dependencies": {
@@ -45,11 +40,5 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.4.2"
-  },
-  "author": "Javier Fernández Castillo",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/HorizonClouds/horizon-frontend/issues"
-  },
-  "homepage": "https://github.com/HorizonClouds/horizon-frontend#readme"
+  }
 }
