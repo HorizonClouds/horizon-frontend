@@ -5,6 +5,4 @@ const config = {
     apiGatewayUrl: process.env.REACT_APP_API_GATEWAY_URL || 'http://localhost:6900/api/v1',
 };
 
-console.log('config:', JSON.stringify(config, null, 2));
-
 export default config;

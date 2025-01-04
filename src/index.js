@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom/client';
 import './common/styles/index.css';
 import App from './common/components/App.js';
 import reportWebVitals from './reportWebVitals';
-import config from './config.js';
-
-console.log('config:', JSON.stringify(config, null, 2));
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
