@@ -1,7 +1,8 @@
 import axios from 'axios';
+import config from '../../config';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:6101/api/v1',
+  baseURL: config.apiGatewayUrl,
   headers: {
     'Content-Type': 'application/json',
   },
