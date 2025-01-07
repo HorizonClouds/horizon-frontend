@@ -9,9 +9,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { User } from 'lucide-react'
+import { LogOut, Settings, User } from 'lucide-react'
 import usersService from '@/services/microservices/usersService';
 import feedsService from '@/services/microservices/feedsService';
+import { useNavigate } from 'react-router-dom'
 
 const UserNavbar = () => {
     const [currentUser, setCurrentUser] = useState(usersService.getLoggedUser()?.id);
@@ -32,7 +33,15 @@ const UserNavbar = () => {
         } catch (error) {
             console.error('Login failed', error);
         }
-    };
+    };  
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+      navigate('/')
+    }
+    const handleProfileClick = () => {
+      navigate('/profile')
+    }
 
     useEffect(() => {
         setCurrentUser(usersService.getLoggedUser()?.id);
@@ -53,16 +62,25 @@ const UserNavbar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>{"name:" + currentUser}</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem 
+                    onClick={handleProfileClick}
+                    className="cursor-pointer"
+                >
                     <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                    <span>Perfil</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleUserLogin('user1', 'password1')}>USER1</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleUserLogin('user2', 'password2')}>USER2</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleUserLogin('user3', 'password3')}>USER3</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
+                <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="cursor-pointer"
+                >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Cerrar sesión</span>
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );
