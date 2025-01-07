@@ -1,61 +1,39 @@
 import React from 'react'
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { CloudSun, MessageCircle, Compass, User } from 'lucide-react'
+import { Home, List, Compass, User } from 'lucide-react';
+import UserNavbar from '../microservices/users/UserNavbar'
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
-    <nav className="bg-white border-b">
-      <div className="max-w-5xl mx-auto px-4">
+    <nav className="bg-white shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            {/* Logo */}
-            <CloudSun className="h-8 w-8 text-blue-500" />
-            <span className="ml-2 text-xl font-semibold text-gray-800">Horizon Clouds</span>
+          <div className="flex">
+            <Link to="/itineraries-feed" className="flex-shrink-0 flex items-center">
+              <span className="font-bold text-xl text-blue-600">HorizonClouds</span>
+            </Link>
           </div>
-          {/* Navigation Items */}
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm">
-              <MessageCircle className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="sm">
-              <Compass className="h-5 w-5" />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex">
+            <Link to="/itineraries-feed" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+              <List className="w-5 h-5 mr-1" />
+              Feed
+            </Link>
+            <Link to="/explore" className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+              <Compass className="w-5 h-5 mr-1" />
+              Explore
+            </Link>
+          </div>
+          <div className="flex">
+            <div className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+              <UserNavbar />
+            </div>
           </div>
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
 export default Navbar
 
