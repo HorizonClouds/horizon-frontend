@@ -71,8 +71,14 @@ const UserNavbar = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleUserLogin('user1', 'password1')}>USER1</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleUserLogin('user2', 'password2')}>USER2</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleUserLogin('user3', 'password3')}>USER3</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleUserLogin('user3', 'password3')}>USER3</DropdownMenuItem>             
+                <DropdownMenuItem 
+                    onClick={() => navigate('/settings')}
+                    className="cursor-pointer"
+                >
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Ajustes</span>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
                     onClick={handleLogout}

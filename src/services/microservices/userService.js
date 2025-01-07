@@ -28,11 +28,13 @@ const userService = {
 
   register: async (userData) => {
     try {
-      const response = await backendApiClient.post('users/api/v1/users/register', {
-        userName: userData.username,
+      const response = await backendApiClient.post('users/api/v1/users', {
         password: userData.password,
         name: userData.name,
-        email: userData.email
+        email: userData.email,
+        photo: userData.photo,
+        biography : userData.biography,
+        roles: userData.roles
       });
       return response.data;
     } catch (error) {
@@ -59,6 +61,16 @@ const userService = {
   logout: () => {
     localStorage.removeItem('horizon-token');
     localStorage.removeItem('user-id');
+  },
+  
+  updateProfile: async (userId, userData) => {
+    try {
+      const response = await backendApiClient.put(`users/api/v1/users/${userId}`, userData);
+      return response.data;
+    } catch (error) {
+      console.error('Update profile error:', error);
+      throw error;
+    }
   }
 };
 
