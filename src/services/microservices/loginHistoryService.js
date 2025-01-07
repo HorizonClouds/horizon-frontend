@@ -1,16 +1,18 @@
 import backendApiClient from '../utils/apiClient.js';
 
-export const getLoginHistory = async (userId) => {
-  const response = await backendApiClient.get(`/login-history/api/v1/${userId}`);
-  return response.data;
+const loginHistory = {
+    getLoginHistory: async (userId) => {
+      try {
+        const response = await backendApiClient.get(`users/api/v1/loginHistory/${userId}`);
+        // Asegurarnos de devolver el array de historiales o convertir el objeto único en array
+        return {
+          data: Array.isArray(response.data.data) ? response.data.data : [response.data.data]
+        };
+      } catch (error) {
+        console.error('Get login history error:', error);
+        throw error;
+      }
+    }
 };
 
-export const addLoginEntry = async (userId) => {
-  const response = await backendApiClient.post('/login-history/api/v1', { userId });
-  return response.data;
-};
-
-export default {
-  getLoginHistory,
-  addLoginEntry
-};
+export default loginHistory;

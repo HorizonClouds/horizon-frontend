@@ -17,6 +17,9 @@ const userService = {
         if (response.data.data.payload?.user?.id) {
           localStorage.setItem('user-id', response.data.data.payload.user.id);
           idUser = response.data.data.payload.user.id;
+          await backendApiClient.post('users/api/v1/loginHistory', {
+              userId: idUser
+            });
         }
       }
       return response.data;
@@ -46,9 +49,21 @@ const userService = {
   getUserProfile: async (userId) => {
     try {
       const response = await backendApiClient.get(`users/api/v1/users/${userId}`);
+      localStorage.setItem('user-name', response.data.data.name);
+      localStorage.setItem('user-photo', response.data.data.photo);
       return response.data;
     } catch (error) {
       console.error('Get profile error:', error);
+      throw error;
+    }
+  },
+
+  getUserDetails: async (userId) => {
+    try {
+      const response = await backendApiClient.get(`users/api/v1/users/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Get user details error:', error);
       throw error;
     }
   },
@@ -61,6 +76,7 @@ const userService = {
   logout: () => {
     localStorage.removeItem('horizon-token');
     localStorage.removeItem('user-id');
+    localStorage.removeItem('user-name');
   },
   
   updateProfile: async (userId, userData) => {

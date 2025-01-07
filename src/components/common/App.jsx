@@ -8,6 +8,7 @@ import ItinerariesFeedView from "../microservices/feeds/ItinerariesFeedView";
 import ItineraryDetail from "../microservices/itineraries/ItineraryDetail";
 import ItineraryNew from "../microservices/itineraries/ItineraryNew";
 import ExploreView from "../microservices/publications/ExploreView";
+import FriendsComponent from "../microservices/users/FriendsComponent";
 
 
 const App = () => {
@@ -37,6 +38,10 @@ const App = () => {
         <Route 
           path="/settings" 
           element={user ? <View><SettingsComponent user={user} /></View> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/friends" 
+          element={user ? <View><FriendsComponent /></View> : <Navigate to="/" />} 
         />
 
         {/* Existing routes - protected */}

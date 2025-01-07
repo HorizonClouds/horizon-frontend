@@ -1,28 +1,39 @@
 import backendApiClient from '../utils/apiClient.js';
+import userService from './userService.js'
 
-export const followUser = async (followerId, followedId) => {
-  const response = await backendApiClient.post('/following/api/v1', { followerId, followedId });
-  return response.data;
+const followingService = {
+  followUser: async (followerUserId, followedUserId) => {
+    try {
+      const response = await backendApiClient.post('users/api/v1/follow', {
+        followerUserId,
+        followedUserId
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Follow user error:', error);
+      throw error;
+    }
+  },
+
+  getFriends: async (userId) => {
+    try {
+      const response = await backendApiClient.get(`users/api/v1/followers/${userId}`);
+      
+      // Get user details for each friend
+      const friendsDetails = await Promise.all(
+        response.data.data.map(async (friendId) => {
+          const userDetails = await userService.getUserDetails(friendId);
+          return userDetails.data;
+        })
+      );
+
+      return { data: friendsDetails };
+    } catch (error) {
+      console.error('Get friends error:', error);
+      throw error;
+    }
+  }
 };
 
-export const unfollowUser = async (followerId, followedId) => {
-  const response = await backendApiClient.delete(`/following/api/v1/${followerId}/${followedId}`);
-  return response.data;
-};
+export default followingService;
 
-export const getFollowers = async (userId) => {
-  const response = await backendApiClient.get(`/following/api/v1/followers/${userId}`);
-  return response.data;
-};
-
-export const getFollowing = async (userId) => {
-  const response = await backendApiClient.get(`/following/api/v1/following/${userId}`);
-  return response.data;
-};
-
-export default {
-  followUser,
-  unfollowUser,
-  getFollowers,
-  getFollowing
-};

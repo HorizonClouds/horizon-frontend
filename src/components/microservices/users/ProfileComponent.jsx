@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loader2, UserPlus, Users } from 'lucide-react';
 import userService from '@/services/microservices/userService';
+import friendRequestService from '@/services/microservices/friendRequestService';
+import followingService from '@/services/microservices/followingService';
 
 const ProfileComponent = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [friendRequestId, setFriendRequestId] = useState('');
+  const [friendRequestLoading, setFriendRequestLoading] = useState(false);
+  const [friendRequestError, setFriendRequestError] = useState('');
+  const [friendRequestSuccess, setFriendRequestSuccess] = useState('');
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [loadingRequests, setLoadingRequests] = useState(true);
+  const [requestError, setRequestError] = useState('');
+  const [processingRequest, setProcessingRequest] = useState(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -18,7 +31,7 @@ const ProfileComponent = () => {
         }
         
         const response = await userService.getUserProfile(userId);
-        setProfile(response.data); // Asumiendo que los datos vienen en response.data
+        setProfile(response.data);
       } catch (err) {
         console.error('Error fetching profile:', err);
         setError(err.message || 'Error al cargar el perfil');
@@ -29,6 +42,79 @@ const ProfileComponent = () => {
 
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    const fetchFriendRequests = async () => {
+      try {
+        setLoadingRequests(true);
+        const userId = localStorage.getItem('user-id');
+        if (!userId) {
+          throw new Error('No user ID found');
+        }
+
+        const response = await friendRequestService.getFriendRequests(userId);
+        setFriendRequests(response.data || []);
+      } catch (err) {
+        console.error('Error fetching friend requests:', err);
+        setRequestError(err.message || 'Error loading friend requests');
+      } finally {
+        setLoadingRequests(false);
+      }
+    };
+
+    fetchFriendRequests();
+  }, []);
+
+  const handleFriendRequest = async (e) => {
+    e.preventDefault();
+    setFriendRequestLoading(true);
+    setFriendRequestError('');
+    setFriendRequestSuccess('');
+
+    try {
+      if (!friendRequestId.trim()) {
+        throw new Error('Please enter a user ID');
+      }
+
+      await friendRequestService.sendFriendRequest(friendRequestId);
+      setFriendRequestSuccess('Friend request sent successfully!');
+      setFriendRequestId('');
+    } catch (err) {
+      console.error('Error sending friend request:', err);
+      setFriendRequestError(err.message || 'Error sending friend request');
+    } finally {
+      setFriendRequestLoading(false);
+    }
+  };
+
+  const handleRequestAction = async (requestId, action, senderUserId) => {
+    setProcessingRequest(requestId);
+    try {
+      const currentUserId = localStorage.getItem('user-id');
+      if (!currentUserId) {
+        throw new Error('No user ID found');
+      }
+
+      if (action === 'accept') {
+        await friendRequestService.acceptFriendRequest(requestId);
+        // Create mutual follow relationship
+        await followingService.followUser(currentUserId, senderUserId);
+        await followingService.followUser(senderUserId, currentUserId);
+      } else {
+        await friendRequestService.rejectFriendRequest(requestId);
+      }
+
+      // Update the friend requests list
+      setFriendRequests(prevRequests => 
+        prevRequests.filter(request => request.id !== requestId)
+      );
+    } catch (err) {
+      console.error(`Error ${action}ing friend request:`, err);
+      setRequestError(`Error ${action}ing friend request`);
+    } finally {
+      setProcessingRequest(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -143,6 +229,127 @@ const ProfileComponent = () => {
               )}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <UserPlus className="h-5 w-5" />
+            Send Friend Request
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleFriendRequest} className="space-y-4">
+            {friendRequestError && (
+              <div className="bg-destructive/15 text-destructive p-3 rounded-md">
+                {friendRequestError}
+              </div>
+            )}
+            {friendRequestSuccess && (
+              <div className="bg-green-100 text-green-800 p-3 rounded-md">
+                {friendRequestSuccess}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Enter email"
+                value={friendRequestId}
+                onChange={(e) => setFriendRequestId(e.target.value)}
+                className="flex-1"
+              />
+              <Button type="submit" disabled={friendRequestLoading}>
+                {friendRequestLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send Request'
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Friend Requests
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loadingRequests ? (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          ) : requestError ? (
+            <div className="bg-destructive/15 text-destructive p-3 rounded-md">
+              {requestError}
+            </div>
+          ) : friendRequests.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4">
+              No pending friend requests
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {friendRequests.map((request) => (
+                <div
+                  key={request.id}
+                  className="flex items-center justify-between p-4 rounded-lg border"
+                >
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={request.senderDetails.photo} alt={request.senderDetails.name} />
+                      <AvatarFallback>
+                        {request.senderDetails.name?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium">{request.senderDetails.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {request.userId}
+                      </p>
+                      {request.senderDetails.email && (
+                        <p className="text-xs text-muted-foreground">
+                          {request.senderDetails.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleRequestAction(request.id, 'accept', request.userId)}
+                      disabled={processingRequest === request.id}
+                    >
+                      {processingRequest === request.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        'Accept'
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRequestAction(request.id, 'reject', request.userId)}
+                      disabled={processingRequest === request.id}
+                    >
+                      {processingRequest === request.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        'Reject'
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
