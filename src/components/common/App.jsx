@@ -3,6 +3,7 @@ import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 import HomeView from "./HomeView";
 import View from "./ViewWrapper";
 import ProfileComponent from "../microservices/users/ProfileComponent";
+import SettingsComponent from "../microservices/users/SettingsComponent";
 import ItinerariesFeedView from "../microservices/feeds/ItinerariesFeedView";
 import ItineraryDetail from "../microservices/itineraries/ItineraryDetail";
 import ItineraryNew from "../microservices/itineraries/ItineraryNew";
@@ -30,6 +31,12 @@ const App = () => {
         <Route 
           path="/profile" 
           element={user ? <View><ProfileComponent user={user} /></View> : <Navigate to="/" />} 
+        />
+
+        {/* Settings */}
+        <Route 
+          path="/settings" 
+          element={user ? <View><SettingsComponent user={user} /></View> : <Navigate to="/" />} 
         />
 
         {/* Existing routes - protected */}

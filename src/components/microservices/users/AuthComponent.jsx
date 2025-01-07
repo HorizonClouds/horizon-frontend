@@ -9,10 +9,13 @@ const AuthComponent = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
     name: '',
-    email: ''
+    photo: '',
+    biography: '',
+    email: '',
+    password: '',
+    username: '',
+    roles: ['user']
   });
 
   const handleSubmit = async (e) => {
@@ -27,24 +30,27 @@ const AuthComponent = ({ onLogin }) => {
           password: formData.password
         });
         
-        // Extraer los datos del usuario de la respuesta
         const userData = {
           id: response.data.payload.user.user,
           roles: response.data.payload.user.roles,
-          name: formData.username, // O usar el nombre del payload si está disponible
+          name: formData.name,
           token: response.data.token
         };
 
         onLogin(userData);
       } else {
+        // Register with all fields
         await userService.register({
-          username: formData.username,
-          password: formData.password,
           name: formData.name,
-          email: formData.email
+          photo: formData.photo,
+          biography: formData.biography,
+          email: formData.email,
+          password: formData.password,
+          roles: formData.roles,
+          username: formData.username
         });
 
-        // Después del registro exitoso, hacer login automático
+        // Login after registration using username/password
         const loginResponse = await userService.login({
           username: formData.username,
           password: formData.password
@@ -61,17 +67,31 @@ const AuthComponent = ({ onLogin }) => {
       }
     } catch (error) {
       console.error('Auth error:', error);
-      setError(error.response?.data?.message || 'Error en la autenticación');
+      setError(error.response?.data?.message || 'Authentication error');
     } finally {
       setLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setFormData({
+      name: '',
+      photo: '',
+      biography: '',
+      email: '',
+      password: '',
+      username: '',
+      roles: ['user']
+    });
   };
 
   return (
     <div className="w-full max-w-md mx-auto mt-10">
       <Card>
         <CardHeader>
-          <CardTitle>{isLogin ? 'Iniciar Sesión' : 'Registro'}</CardTitle>
+          <CardTitle>{isLogin ? 'Login' : 'Register'}</CardTitle>
         </CardHeader>
         <CardContent>
           {error && (
@@ -81,17 +101,35 @@ const AuthComponent = ({ onLogin }) => {
           )}
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
-              {!isLogin && (
+              {!isLogin ? (
                 <>
                   <Input
                     type="text"
-                    placeholder="Nombre completo"
+                    placeholder="Full Name"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
                       name: e.target.value
                     }))}
-                    required={!isLogin}
+                    required
+                  />
+                  <Input
+                    type="url"
+                    placeholder="Photo URL"
+                    value={formData.photo}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      photo: e.target.value
+                    }))}
+                  />
+                  <textarea
+                    placeholder="Biography"
+                    value={formData.biography}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      biography: e.target.value
+                    }))}
+                    className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2"
                   />
                   <Input
                     type="email"
@@ -101,13 +139,24 @@ const AuthComponent = ({ onLogin }) => {
                       ...prev,
                       email: e.target.value
                     }))}
-                    required={!isLogin}
+                    required
                   />
+                  <select
+                    value={formData.roles[0]}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      roles: [e.target.value]
+                    }))}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
                 </>
-              )}
+              ) : null}
               <Input
                 type="text"
-                placeholder="Nombre de usuario"
+                placeholder="Username"
                 value={formData.username}
                 onChange={(e) => setFormData(prev => ({
                   ...prev,
@@ -117,7 +166,7 @@ const AuthComponent = ({ onLogin }) => {
               />
               <Input
                 type="password"
-                placeholder="Contraseña"
+                placeholder="Password"
                 value={formData.password}
                 onChange={(e) => setFormData(prev => ({
                   ...prev,
@@ -128,23 +177,14 @@ const AuthComponent = ({ onLogin }) => {
             </div>
             <CardFooter className="flex justify-between mt-6">
               <Button type="submit" disabled={loading}>
-                {loading ? 'Cargando...' : isLogin ? 'Iniciar Sesión' : 'Registrarse'}
+                {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
               </Button>
               <Button 
                 type="button" 
                 variant="outline" 
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError('');
-                  setFormData({
-                    username: '',
-                    password: '',
-                    name: '',
-                    email: ''
-                  });
-                }}
+                onClick={resetForm}
               >
-                {isLogin ? '¿Necesitas una cuenta?' : '¿Ya tienes cuenta?'}
+                {isLogin ? 'Need an account?' : 'Already have an account?'}
               </Button>
             </CardFooter>
           </form>
@@ -155,4 +195,3 @@ const AuthComponent = ({ onLogin }) => {
 };
 
 export default AuthComponent;
-
