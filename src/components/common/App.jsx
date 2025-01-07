@@ -6,6 +6,7 @@ import HomeView from './HomeView';
 import View from './ViewWrapper';
 import ItineraryNew from '../microservices/itineraries/ItineraryNew';
 import ExploreView from '../microservices/publications/ExploreView';
+import ApiDocsView from './ApiDocsView';
 
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
     <Routes>
       {/* HOME */}
     <Route path="/" element={<HomeView />} />
+    
 
     {/*Añadir todas las rutas de los microservicios aquí*/}
     {/*FEEDS*/}
@@ -27,6 +29,8 @@ const App = () => {
     <Route path="/itineraries/:itineraryId" element={<View> <ItineraryDetail /> </View>} />
     {/* PUBLICATIONS */}
     <Route path="/explore" element={<View><ExploreView /></View>} />
+    {/* API DOCS */}
+    <Route path="/api-docs" element={<View> <ApiDocsView /> </View>} />
   </Routes>
   </BrowserRouter>
   )

@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Calendar, MapPin, MessageCircle, Star } from 'lucide-react'
-import Activities from './Activities'
-import Comments from './Comments'
-import Reviews from './Reviews'
-import { MOCK_ITINERARIES } from '@/components/common/utils/mocks'
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Calendar, MapPin, MessageCircle, Star } from 'lucide-react';
+import Activities from './Activities';
+import Comments from './Comments';
+import Reviews from './Reviews';
+import { getItineraryById, addActivityToItinerary, submitCommentForItinerary, submitReviewForItinerary } from '@/services/microservices/itinerariesService';
+import { useParams } from 'react-router-dom';
 
 const AccordionHeader = ({ icon, title }) => (
   <div className="flex items-center">
@@ -14,27 +15,55 @@ const AccordionHeader = ({ icon, title }) => (
   </div>
 );
 
-const initialItinerary = MOCK_ITINERARIES[0]
+const ItineraryDetail = () => {
+  const { itineraryId } = useParams();
+  const [itinerary, setItinerary] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
+  useEffect(() => {
+    const fetchItinerary = async () => {
+      try {
+        const data = await getItineraryById(itineraryId);
+        setItinerary(data);
+      } catch (err) {
+        setError('Failed to fetch itinerary');
+      }
+    };
+    fetchItinerary();
+  }, [itineraryId]);
 
-const ItineraryDetail = ({ itineraryId }) => {
-  
-  const [itinerary, setItinerary] = useState(initialItinerary)
+  const handleAddActivity = async (activity) => {
+    try {
+      const newActivity = await addActivityToItinerary(itineraryId, activity);
+      setItinerary({ ...itinerary, activities: [...itinerary.activities, newActivity] });
+      setSuccess('Activity added successfully');
+    } catch (err) {
+      setError('Failed to add activity');
+    }
+  };
 
-  const handleAddActivity = (activity) => {
-    const newActivity = { ...activity, _id: `act${itinerary.activities.length + 1}` }
-    setItinerary({ ...itinerary, activities: [...itinerary.activities, newActivity] })
-  }
+  const handleAddComment = async (comment) => {
+    try {
+      const newComment = await submitCommentForItinerary(itineraryId, comment);
+      setItinerary({ ...itinerary, comments: [...itinerary.comments, newComment] });
+      setSuccess('Comment added successfully');
+    } catch (err) {
+      setError('Failed to add comment');
+    }
+  };
 
-  const handleAddComment = (comment) => {
-    const newComment = { ...comment, _id: `com${itinerary.comments.length + 1}`, createdAt: new Date().toISOString() }
-    setItinerary({ ...itinerary, comments: [...itinerary.comments, newComment] })
-  }
+  const handleAddReview = async (review) => {
+    try {
+      const newReview = await submitReviewForItinerary(itineraryId, review);
+      setItinerary({ ...itinerary, reviews: [...itinerary.reviews, newReview] });
+      setSuccess('Review added successfully');
+    } catch (err) {
+      setError('Failed to add review');
+    }
+  };
 
-  const handleAddReview = (review) => {
-    const newReview = { ...review, _id: `rev${itinerary.reviews.length + 1}`, createdAt: new Date().toISOString() }
-    setItinerary({ ...itinerary, reviews: [...itinerary.reviews, newReview] })
-  }
+  if (!itinerary) return <div>Loading...</div>;
 
   return (
     <Card className="w-full max-w-3xl mx-auto">
@@ -47,6 +76,8 @@ const ItineraryDetail = ({ itineraryId }) => {
         </div>
       </CardHeader>
       <CardContent>
+        {error && <div className="text-red-500">{error}</div>}
+        {success && <div className="text-green-500">{success}</div>}
         <Accordion type="multiple" defaultValue={['activities', 'comments', 'reviews']} className="space-y-4">
           <AccordionItem value="activities" className="border rounded-lg overflow-hidden">
             <AccordionTrigger className="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors">
@@ -75,7 +106,7 @@ const ItineraryDetail = ({ itineraryId }) => {
         </Accordion>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 export default ItineraryDetail;

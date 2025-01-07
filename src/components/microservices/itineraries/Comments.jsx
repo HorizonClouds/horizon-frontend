@@ -1,48 +1,101 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCircle, Plus } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+const commentSchema = z.object({
+  title: z.string()
+    .min(1, "Title is required")
+    .max(50, "Title must not exceed 50 characters")
+    .refine(
+      (value) => value.trim().split(/\s+/).length <= 10,
+      "Title must not exceed 10 words"
+    ),
+  message: z.string()
+    .min(3, "Message must be at least 3 characters long")
+    .max(280, "Message must not exceed 280 characters"),
+});
 
 const Comments = ({ comments, onAddComment }) => {
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newComment, setNewComment] = useState({ userId: 'current-user', title: '', message: '' });
+  const form = useForm({
+    resolver: zodResolver(commentSchema),
+    defaultValues: {
+      title: '',
+      message: '',
+    },
+  });
 
-  const handleAddComment = () => {
-    onAddComment(newComment);
-    setNewComment({ userId: 'current-user', title: '', message: '' });
-    setShowAddForm(false);
+  const onSubmit = (data) => {
+    onAddComment({ ...data, userId: 'current-user' });
+    form.reset();
   };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <Button onClick={() => setShowAddForm(!showAddForm)}>
+        <Button onClick={() => form.reset()}>
           <Plus className="w-4 h-4 mr-1" /> Add Comment
         </Button>
       </div>
-      {showAddForm && (
-        <Card className="mb-4">
-          <CardContent className="p-4">
-            <Input
-              placeholder="Title"
-              value={newComment.title}
-              onChange={(e) => setNewComment({ ...newComment, title: e.target.value })}
-              className="mb-2"
-            />
-            <Textarea
-              placeholder="Your comment"
-              value={newComment.message}
-              onChange={(e) => setNewComment({ ...newComment, message: e.target.value })}
-              className="mb-2"
-            />
-            <Button onClick={handleAddComment}><MessageCircle className="w-4 h-4 mr-1" /> Add Comment</Button>
-          </CardContent>
-        </Card>
-      )}
+      <Card className="mb-4">
+        <CardContent className="p-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Title" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Enter a title for your comment (max 10 words)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your comment</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Your comment" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Enter your comment (3-280 characters)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full">
+                <MessageCircle className="w-4 h-4 mr-1" /> Add Comment
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
       <ScrollArea className="h-60 pr-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1' }}>
         {comments.map((comment) => (
           <Card key={comment._id} className="mb-2">

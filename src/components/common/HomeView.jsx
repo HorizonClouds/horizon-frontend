@@ -80,7 +80,6 @@ const HomeView = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-2xl mx-auto py-8 px-4">
-        <ItineraryDetail itinerary={MOCK_ITINERARIES[0]} userAddons={{}} />
         <ItinerariesFeedView />
         <button
           onClick={() => itinerariesService.TEST_ALL()}
