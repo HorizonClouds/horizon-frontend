@@ -75,6 +75,7 @@ const userService = {
 
   logout: () => {
     localStorage.removeItem('horizon-token');
+    localStorage.removeItem('horizon-user');
     localStorage.removeItem('user-id');
     localStorage.removeItem('user-name');
   },

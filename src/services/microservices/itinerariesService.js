@@ -90,41 +90,41 @@ export const getActivitiesByItineraryId = async (itineraryId) => {
 };
 
 /**
- * Get a specific activity by index.
+ * Get a specific activity by ID.
  * @param {string} itineraryId - The ID of the itinerary.
- * @param {number} activityIndex - The index of the activity.
+ * @param {string} activityId - The ID of the activity.
  * @returns {Promise<Object>} The requested activity.
  */
-export const getActivityByIndex = async (itineraryId, activityIndex) => {
-  console.log('%c[getActivityByIndex] Requesting activity with index:', 'color: blue;', activityIndex, 'from itinerary with ID:', itineraryId);
-  const response = await backendApiClient.get(`/itineraries/api/v1/itineraries/${itineraryId}/activities/${activityIndex}`);
-  console.log('%c[getActivityByIndex] Response:', 'color: green;', response);
+export const getActivityById = async (itineraryId, activityId) => {
+  console.log('%c[getActivityById] Requesting activity with ID:', 'color: blue;', activityId, 'from itinerary with ID:', itineraryId);
+  const response = await backendApiClient.get(`/itineraries/api/v1/itineraries/${itineraryId}/activities/${activityId}`);
+  console.log('%c[getActivityById] Response:', 'color: green;', response);
   return response.data?.data;
 };
 
 /**
  * Get the weather forecast for a specific activity.
  * @param {string} itineraryId - The ID of the itinerary.
- * @param {number} activityIndex - The index of the activity.
+ * @param {string} activityId - The ID of the activity.
  * @returns {Promise<Object>} The weather forecast for the activity.
  */
-export const getActivityForecast = async (itineraryId, activityIndex) => {
-  console.log('%c[getActivityForecast] Requesting weather forecast for activity with index:', 'color: blue;', activityIndex, 'from itinerary with ID:', itineraryId);
-  const response = await backendApiClient.get(`/itineraries/api/v1/itineraries/${itineraryId}/activities/${activityIndex}/forecast`);
+export const getActivityForecast = async (itineraryId, activityId) => {
+  console.log('%c[getActivityForecast] Requesting weather forecast for activity with ID:', 'color: blue;', activityId, 'from itinerary with ID:', itineraryId);
+  const response = await backendApiClient.get(`/itineraries/api/v1/itineraries/${itineraryId}/activities/${activityId}/forecast`);
   console.log('%c[getActivityForecast] Response:', 'color: green;', response);
   return response.data?.data;
 };
 
 /**
- * Delete an activity by index.
+ * Delete an activity by ID.
  * @param {string} itineraryId - The ID of the itinerary.
- * @param {number} activityIndex - The index of the activity.
+ * @param {string} activityId - The ID of the activity.
  * @returns {Promise<void>} No content.
  */
-export const deleteActivityByIndex = async (itineraryId, activityIndex) => {
-  console.log('%c[deleteActivityByIndex] Deleting activity with index:', 'color: blue;', activityIndex, 'from itinerary with ID:', itineraryId);
-  const response = await backendApiClient.delete(`/itineraries/api/v1/itineraries/${itineraryId}/activities/${activityIndex}`);
-  console.log('%c[deleteActivityByIndex] Response:', 'color: green;', response);
+export const deleteActivityById = async (itineraryId, activityId) => {
+  console.log('%c[deleteActivityById] Deleting activity with ID:', 'color: blue;', activityId, 'from itinerary with ID:', itineraryId);
+  const response = await backendApiClient.delete(`/itineraries/api/v1/itineraries/${itineraryId}/activities/${activityId}`);
+  console.log('%c[deleteActivityById] Response:', 'color: green;', response);
   return response.data?.data;
 };
 
@@ -160,7 +160,7 @@ export const getCommentsByItineraryId = async (itineraryId) => {
  */
 export const deleteCommentById = async (commentId) => {
   console.log('%c[deleteCommentById] Deleting comment with ID:', 'color: blue;', commentId);
-  const response = await backendApiClient.delete(`/v1/comments/${commentId}`);
+  const response = await backendApiClient.delete(`/itineraries/api/v1/comments/${commentId}`);
   console.log('%c[deleteCommentById] Response:', 'color: green;', response);
   return response.data?.data;
 };
@@ -209,7 +209,7 @@ export const getAverageReviewScoreByItineraryId = async (itineraryId) => {
  */
 export const deleteReviewById = async (reviewId) => {
   console.log('%c[deleteReviewById] Deleting review with ID:', 'color: blue;', reviewId);
-  const response = await backendApiClient.delete(`/v1/reviews/${reviewId}`);
+  const response = await backendApiClient.delete(`/itineraries/api/v1/reviews/${reviewId}`);
   console.log('%c[deleteReviewById] Response:', 'color: green;', response);
   return response.data?.data;
 };
@@ -223,9 +223,9 @@ export default {
 
   addActivityToItinerary,
   getActivitiesByItineraryId,
-  getActivityByIndex,
+  getActivityById,
   getActivityForecast,
-  deleteActivityByIndex,
+  deleteActivityById,
 
   submitCommentForItinerary,
   getCommentsByItineraryId,
@@ -297,13 +297,13 @@ async function TEST_ALL(realUser = false) {
   const activities = await getActivitiesByItineraryId(itineraryId);
   console.log('Activities:', activities);
 
-  // Get a specific activity by index
-  const activityIndex = 0;
-  const activity = await getActivityByIndex(itineraryId, activityIndex);
-  console.log('Activity by Index:', activity);
+  // Get a specific activity by ID
+  const activityId = addedActivity._id;
+  const activity = await getActivityById(itineraryId, activityId);
+  console.log('Activity by ID:', activity);
 
   // Get the weather forecast for the activity
-  const activityForecast = await getActivityForecast(itineraryId, activityIndex);
+  const activityForecast = await getActivityForecast(itineraryId, activityId);
   console.log('Activity Forecast:', activityForecast);
 
   // Submit a comment for the itinerary
@@ -327,6 +327,10 @@ async function TEST_ALL(realUser = false) {
   // Get the average review score for the itinerary
   const averageReviewScore = await getAverageReviewScoreByItineraryId(itineraryId);
   console.log('Average Review Score:', averageReviewScore);
+
+  // Delete the activity
+  await deleteActivityById(itineraryId, activityId);
+  console.log('Activity deleted successfully');
 
   // Delete the itinerary
   await deleteItineraryById(itineraryId);

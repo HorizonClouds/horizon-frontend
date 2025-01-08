@@ -4,36 +4,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MapPin, Calendar, Plus, Cloud } from 'lucide-react';
+import { MapPin, Calendar, Plus, Cloud, Trash } from 'lucide-react';
 import MapComponent from './MapComponent';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { activitySchema } from './itinerariesFormsValidators';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
-const Activities = ({ activities, onAddActivity, userAddons }) => {
+const Activities = ({ activities, onAddActivity, onDeleteActivity, userAddons, loggedInUser }) => {
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newActivity, setNewActivity] = useState({
-    name: '',
-    description: '',
-    startDate: '',
-    endDate: '',
-    location: { latitude: 0, longitude: 0, address: '' }
-  });
 
-  const handleAddActivity = () => {
-    onAddActivity(newActivity);
-    setNewActivity({
+  const form = useForm({
+    resolver: zodResolver(activitySchema),
+    defaultValues: {
       name: '',
       description: '',
       startDate: '',
       endDate: '',
       location: { latitude: 0, longitude: 0, address: '' }
-    });
+    },
+  });
+
+  const handleAddActivity = (data) => {
+    onAddActivity(data);
+    form.reset();
     setShowAddForm(false);
   };
 
   const handleLocationSelect = (lat, lng, address) => {
-    setNewActivity({
-      ...newActivity,
-      location: { latitude: lat, longitude: lng, address }
-    });
+    form.setValue('location', { latitude: lat, longitude: lng, address });
   };
 
   const fetchWeatherForecast = async (lat, lon) => {
@@ -44,73 +51,156 @@ const Activities = ({ activities, onAddActivity, userAddons }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <Button onClick={() => setShowAddForm(!showAddForm)}>
-          <Plus className="w-4 h-4 mr-1" /> Add Activity
-        </Button>
+        {loggedInUser ? (
+          <Button onClick={() => setShowAddForm(!showAddForm)}>
+            <Plus className="w-4 h-4 mr-1" /> Add Activity
+          </Button>
+        ) : (
+          <p className="text-gray-500">Login to add an activity</p>
+        )}
       </div>
       {showAddForm && (
         <Card className="mb-4">
           <CardContent className="p-4">
-            <Input
-              placeholder="Activity name"
-              value={newActivity.name}
-              onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
-              className="mb-2"
-            />
-            <Textarea
-              placeholder="Description"
-              value={newActivity.description}
-              onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
-              className="mb-2"
-            />
-            <Input
-              type="datetime-local"
-              value={newActivity.startDate}
-              onChange={(e) => setNewActivity({ ...newActivity, startDate: e.target.value })}
-              className="mb-2"
-            />
-            <Input
-              type="datetime-local"
-              value={newActivity.endDate}
-              onChange={(e) => setNewActivity({ ...newActivity, endDate: e.target.value })}
-              className="mb-2"
-            />
-            <Input
-              readOnly
-              placeholder="Address"
-              value={newActivity.location?.address}
-              onChange={(e) => setNewActivity({ ...newActivity, location: { ...newActivity.location, address: e.target.value } })}
-              className="mt-2 mb-2"
-            />
-            <MapComponent onLocationSelect={handleLocationSelect} />
-            <Button onClick={handleAddActivity} className="mt-2">Add Activity</Button>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleAddActivity)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Activity name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Activity name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Description" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <Input type="datetime-local" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <Input type="datetime-local" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="location.latitude"
+                  render={({ field }) => (
+                    <FormItem hidden>
+                      <FormLabel>Latitude</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Latitude" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="location.longitude"
+                  render={({ field }) => (
+                    <FormItem hidden>
+                      <FormLabel>Longitude</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Longitude" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="location.address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Location address" {...field} readOnly/>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <MapComponent onLocationSelect={handleLocationSelect} />
+                <Button type="submit" className="mt-2">Add Activity</Button>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       )}
-      <ScrollArea className="h-60 pr-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1' }}>
-        {activities.map((activity) => (
-          <Card key={activity._id} className="mb-2">
-            <CardContent className="p-4">
-              <h4 className="font-semibold">{activity.name}</h4>
-              <p className="text-sm text-gray-500">{activity.description}</p>
-              <div className="flex items-center mt-2 text-xs text-gray-500">
-                <Calendar className="w-3 h-3 mr-1" />
-                <span>{new Date(activity.startDate).toLocaleString()} - {new Date(activity.endDate).toLocaleString()}</span>
-              </div>
-              <div className="flex items-center mt-2 text-xs text-gray-500">
-                <MapPin className="w-3 h-3 mr-1" />
-                <span>{activity.location?.address}</span>
-              </div>
-              {/* user addons includes */}
-              {true && (
-                <div className="flex items-center mt-2 text-xs text-gray-500">
-                  <Cloud className="w-3 h-3 mr-1" />
-                  <span>Weather: Loading...</span>
+      <ScrollArea className="h-60 pr-4 flex flex-col" style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1', 'height': 'min-content' }}>
+        {activities.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">Nothing here yet.</p>
+          </div>
+        ) : (
+          activities.map((activity, index) => (
+            <Card key={index} className="mb-2 flex">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{activity.name}</h4>
+                    <p className="text-sm text-gray-500">{activity.description}</p>
+                    <div className="flex items-center mt-2 text-xs text-gray-500">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      <span>{new Date(activity.startDate).toLocaleString()} - {new Date(activity.endDate).toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center mt-2 text-xs text-gray-500">
+                      <MapPin className="w-3 h-3 mr-1" />
+                      <span>{activity.location?.address}</span>
+                    </div>
+                    {/* user addons includes */}
+                    {true && (
+                      <div className="flex items-center mt-2 text-xs text-gray-500">
+                        <Cloud className="w-3 h-3 mr-1" />
+                        <span>Weather: Loading...</span>
+                      </div>
+                    )}
+                  </div>
+                  {loggedInUser && loggedInUser.id === activity.userId && (
+                    <Button variant="danger" onClick={() => onDeleteActivity(activity._id)} className="ml-2">
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </ScrollArea>
     </div>
   );

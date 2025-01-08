@@ -1,11 +1,22 @@
+import { users } from '@/components/common/utils/mocks.js';
 import backendApiClient from '../utils/apiClient.js';
 
 export let loggedUser = null;
 
 const getLoggedUser = () => {
+  if (loggedUser) {
+    return loggedUser;
+  }else{
+    const user = localStorage.getItem('horizon-user');
+    if (user) {
+      loggedUser = JSON.parse(user);
+    }
+  }
   console.log('getLoggedUser', loggedUser);
   return loggedUser;
 }
+
+
 
 export const postLogin = async (formData) => {
   const userId = formData.userId;
@@ -20,8 +31,16 @@ export const postLogin = async (formData) => {
   if (data.token) {
     localStorage.setItem('horizon-token', data.token);
   }
+  if (loggedUser) {
+    localStorage.setItem('horizon-user', JSON.stringify(loggedUser));
+  }
   return response.data;
 }
 
-export default { getLoggedUser, postLogin };
+export const getFriends = async () => {
+  //This is mocked data, replace with real API call
+  return users;
+}
+
+export default { getLoggedUser, postLogin , getFriends};
 

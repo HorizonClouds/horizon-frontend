@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -14,21 +14,25 @@ import usersService from '@/services/microservices/usersService';
 import userService from '@/services/microservices/userService';
 import feedsService from '@/services/microservices/feedsService';
 import { useNavigate } from 'react-router-dom'
+import { UserContext } from '@/contexts/UserContext';
 
 const UserNavbar = () => {
+    const { setLoggedInUser } = useContext(UserContext);
     const [currentUser, setCurrentUser] = useState(usersService.getLoggedUser()?.id);
 
     const handleUserLogin = async (userId, password) => {
         try {
             await usersService.postLogin({ userId, password });
-            setCurrentUser(usersService.getLoggedUser()?.id);
+            const user = usersService.getLoggedUser();
+            setCurrentUser(user?.id);
+            setLoggedInUser(user);
             const initialInterestFilter = { 
-                userId: usersService.getLoggedUser().id,
+                userId: user.id,
                 categoryList: []
             }
             await feedsService.createInterestFilter(initialInterestFilter);
             const initialItinerariesFeed = {
-                userId: usersService.getLoggedUser().id
+                userId: user.id
             }
             await feedsService.createItinerariesFeed(initialItinerariesFeed);
         } catch (error) {
