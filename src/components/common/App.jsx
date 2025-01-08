@@ -15,6 +15,7 @@ import FriendsComponent from "../microservices/users/FriendsComponent";
 import ApiDocsView from './ApiDocsView';
 import InterestFilterFormView from '../microservices/feeds/InterestFilterFormView';
 import { UserContextProvider } from '@/contexts/UserContext';
+import Forecast from '../microservices/itineraries/Forecast';
 
 
 const App = () => {
@@ -63,6 +64,8 @@ const App = () => {
           <Route path="/itineraries/new" element={<View> <ItineraryNew mode="new" /> </View>} />
           <Route path="/itineraries/:itineraryId" element={<View> <ItineraryDetail /> </View>} />
           <Route path="/itineraries/:itineraryId/edit" element={<View> <ItineraryNew mode="update" /> </View>} />
+          {/* FORECAST */}
+          <Route path="/forecast/:itineraryId/:activityId" element={<View><Forecast /></View>} />
           {/* PUBLICATIONS */}
           <Route path="/explore" element={<View><ExploreView /></View>} />
           {/* API DOCS */}
