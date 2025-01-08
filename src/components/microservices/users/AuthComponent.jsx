@@ -18,6 +18,8 @@ const AuthComponent = ({ onLogin }) => {
     roles: ['user']
   });
 
+  const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -50,9 +52,12 @@ const AuthComponent = ({ onLogin }) => {
           username: formData.username
         });
 
+        // Wait for 2 seconds before attempting login
+        await wait(2000);
+
         // Login after registration using username/password
         const loginResponse = await userService.login({
-          username: formData.username,
+          username: formData.name,
           password: formData.password
         });
 
@@ -195,3 +200,4 @@ const AuthComponent = ({ onLogin }) => {
 };
 
 export default AuthComponent;
+
