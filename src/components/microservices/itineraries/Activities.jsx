@@ -6,34 +6,41 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MapPin, Calendar, Plus, Cloud } from 'lucide-react';
 import MapComponent from './MapComponent';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { activitySchema } from './itinerariesFormsValidators';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const Activities = ({ activities, onAddActivity, userAddons }) => {
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newActivity, setNewActivity] = useState({
-    name: '',
-    description: '',
-    startDate: '',
-    endDate: '',
-    location: { latitude: 0, longitude: 0, address: '' }
-  });
 
-  const handleAddActivity = () => {
-    onAddActivity(newActivity);
-    setNewActivity({
+  const form = useForm({
+    resolver: zodResolver(activitySchema),
+    defaultValues: {
       name: '',
       description: '',
       startDate: '',
       endDate: '',
       location: { latitude: 0, longitude: 0, address: '' }
-    });
+    },
+  });
+
+  const handleAddActivity = (data) => {
+    onAddActivity(data);
+    form.reset();
     setShowAddForm(false);
   };
 
   const handleLocationSelect = (lat, lng, address) => {
-    setNewActivity({
-      ...newActivity,
-      location: { latitude: lat, longitude: lng, address }
-    });
+    form.setValue('location', { latitude: lat, longitude: lng, address });
   };
 
   const fetchWeatherForecast = async (lat, lon) => {
@@ -51,39 +58,103 @@ const Activities = ({ activities, onAddActivity, userAddons }) => {
       {showAddForm && (
         <Card className="mb-4">
           <CardContent className="p-4">
-            <Input
-              placeholder="Activity name"
-              value={newActivity.name}
-              onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
-              className="mb-2"
-            />
-            <Textarea
-              placeholder="Description"
-              value={newActivity.description}
-              onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
-              className="mb-2"
-            />
-            <Input
-              type="datetime-local"
-              value={newActivity.startDate}
-              onChange={(e) => setNewActivity({ ...newActivity, startDate: e.target.value })}
-              className="mb-2"
-            />
-            <Input
-              type="datetime-local"
-              value={newActivity.endDate}
-              onChange={(e) => setNewActivity({ ...newActivity, endDate: e.target.value })}
-              className="mb-2"
-            />
-            <Input
-              readOnly
-              placeholder="Address"
-              value={newActivity.location?.address}
-              onChange={(e) => setNewActivity({ ...newActivity, location: { ...newActivity.location, address: e.target.value } })}
-              className="mt-2 mb-2"
-            />
-            <MapComponent onLocationSelect={handleLocationSelect} />
-            <Button onClick={handleAddActivity} className="mt-2">Add Activity</Button>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleAddActivity)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Activity name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Activity name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Description" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <Input type="datetime-local" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <Input type="datetime-local" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="location.latitude"
+                  render={({ field }) => (
+                    <FormItem hidden>
+                      <FormLabel>Latitude</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Latitude" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="location.longitude"
+                  render={({ field }) => (
+                    <FormItem hidden>
+                      <FormLabel>Longitude</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Longitude" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="location.address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Location address" {...field} readOnly/>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <MapComponent onLocationSelect={handleLocationSelect} />
+                <Button type="submit" className="mt-2">Add Activity</Button>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       )}

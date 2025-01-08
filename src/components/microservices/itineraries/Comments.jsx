@@ -18,19 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-const commentSchema = z.object({
-  title: z.string()
-    .min(1, "Title is required")
-    .max(50, "Title must not exceed 50 characters")
-    .refine(
-      (value) => value.trim().split(/\s+/).length <= 10,
-      "Title must not exceed 10 words"
-    ),
-  message: z.string()
-    .min(3, "Message must be at least 3 characters long")
-    .max(280, "Message must not exceed 280 characters"),
-});
+import { commentSchema } from './itinerariesFormsValidators';
 
 const Comments = ({ comments, onAddComment }) => {
   const form = useForm({
@@ -40,6 +28,8 @@ const Comments = ({ comments, onAddComment }) => {
       message: '',
     },
   });
+
+  let commentCount = 0;
 
   const onSubmit = (data) => {
     onAddComment({ ...data, userId: 'current-user' });
@@ -98,7 +88,8 @@ const Comments = ({ comments, onAddComment }) => {
       </Card>
       <ScrollArea className="h-60 pr-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1' }}>
         {comments.map((comment) => (
-          <Card key={comment._id} className="mb-2">
+          
+          <Card key={commentCount++} className="mb-2">
             <CardContent className="p-4">
               <div className="flex items-center mb-2">
                 <Avatar className="w-6 h-6 mr-2">

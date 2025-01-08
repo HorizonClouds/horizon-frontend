@@ -52,10 +52,10 @@ export const activitySchema = z.object({
   endDate: z.string()
     .refine((date) => !isNaN(Date.parse(date)), "End date must be a valid date"),
   location: z.object({
-    latitude: z.number(),
-    longitude: z.number(),
-    address: z.string(),
-  }).optional(),
+    latitude: z.number().refine((lat) => lat >= -90 && lat <= 90, "Latitude must be between -90 and 90"),
+    longitude: z.number().refine((lng) => lng >= -180 && lng <= 180, "Longitude must be between -180 and 180"),
+    address: z.string().min(1, "Address is required").max(200, "Address must not exceed 200 characters"),
+  }),
 }).refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
   message: "Start date must be before or equal to end date",
   path: ["startDate"],
