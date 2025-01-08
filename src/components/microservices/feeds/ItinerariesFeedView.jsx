@@ -18,7 +18,6 @@ const ItinerariesFeedView = () => {
     const fetchFeedAndReRender = async () => {
         try {
             let feed = await feedsService.getItinerariesFeedByUserId(loggedUserId || 'default');
-            console.log(feed);
             setFeedResponse(feed || []);
             toast({ title: 'Success', description: 'Itineraries fetched successfully' });
         } catch (err) {
@@ -27,16 +26,23 @@ const ItinerariesFeedView = () => {
     };
     // This method is called when the component is mounted (first render)
     useEffect(() => {
+        toast({ title: 'Test Toast', description: 'This is a test toast' });
+
         fetchFeedAndReRender();
+        
     }, []);
 
+    useEffect(() => {
+        // This effect will run whenever feedResponse changes
+    }, [feedResponse]);
+
     const handleRefresh = async () => {
-        if (!loggedUserId) {
-            fetchFeedAndReRender();
-        }else {
-            let feed = await feedsService.updateItinerariesFeedByUserId(loggedUserId)
-            if (feed) setSuccess('Itineraries fetched successfully');
+        try {
+            let feed = await feedsService.updateItinerariesFeedByUserId(loggedUserId || 'default');
             setFeedResponse(feed || []);
+            toast({ title: 'Success', description: 'Itineraries refreshed successfully' });
+        } catch (err) {
+            toast({ title: 'Error', description: 'Failed to refresh itineraries' });
         }
     };
 
@@ -52,10 +58,12 @@ const ItinerariesFeedView = () => {
                     Add Itinerary
                 </Button>
                 </Link>
-                <Button variant="outline" size="sm">
+                <Link to={`/interest-filters/${loggedUserId}`} key={loggedUserId}>
+                <Button variant="outline" size="sm" >
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Interest Filter
                 </Button>
+                </Link>
                 <Button variant="outline" size="sm" onClick={handleRefresh}>
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Refresh

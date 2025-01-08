@@ -7,6 +7,7 @@ import View from './ViewWrapper';
 import ItineraryNew from '../microservices/itineraries/ItineraryNew';
 import ExploreView from '../microservices/publications/ExploreView';
 import ApiDocsView from './ApiDocsView';
+import InterestFilterFormView from '../microservices/feeds/InterestFilterFormView';
 
 
 const App = () => {
@@ -20,7 +21,7 @@ const App = () => {
     {/*Añadir todas las rutas de los microservicios aquí*/}
     {/*FEEDS*/}
     <Route path="/itineraries-feed" element={<View> <ItinerariesFeedView /></View>} />
-    <Route path="/interest-filters/:userId" element={<ItinerariesFeedView />} />
+    <Route path="/interest-filters/:userId" element={<View><InterestFilterFormView /></View>} />
     {/*CHATS*/}
     <Route path="/chats" element={<ItinerariesFeedView />} />
     <Route path="/chats/:writerUserId/:receiverUserId" element={<ItinerariesFeedView />} />
