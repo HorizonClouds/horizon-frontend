@@ -37,3 +37,48 @@ export const MOCK_ITINERARIES = [
         reviews: []
     }
 ]
+
+export const users = [
+    {
+        id: "user1",
+        password: 'password1',
+        roles: ['admin', 'user'],
+        name: 'John Doe',
+        photo: 'photo1.jpg',
+        biography: 'Lorem ipsum dolor sit amet.',
+        registrationDate: '2021-01-01',
+        accountStatus: 'active',
+        friendRequestStatus: 'none',
+        verifiedEmail: true,
+        plan: 'pro',
+        addons: ['all']
+    },
+    {
+        id: "user2",
+        password: 'password2',
+        roles: ['user'],
+        name: 'Jane Smith',
+        photo: 'photo2.jpg',
+        biography: 'Consectetur adipiscing elit.',
+        registrationDate: '2021-02-01',
+        accountStatus: 'active',
+        friendRequestStatus: 'pending',
+        verifiedEmail: true,
+        plan: 'basic',
+        addons: ["addon1"]
+    },
+    {
+        id: "user3",
+        password: 'password3',
+        roles: ['user'],
+        name: 'Alice Johnson',
+        photo: 'photo3.jpg',
+        biography: 'Sed do eiusmod tempor incididunt.',
+        registrationDate: '2021-03-01',
+        accountStatus: 'inactive',
+        friendRequestStatus: 'accepted',
+        verifiedEmail: false,
+        plan: 'pro',
+        addons: ['addon1', 'addon2']
+    }
+];

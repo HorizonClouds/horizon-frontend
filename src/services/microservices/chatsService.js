@@ -12,7 +12,7 @@ export const createMessage = async (data) => {
 
 export const updateMessageStatusById = async (id) => {
   try {
-    const response = await backendApiClient.get(`/chats/api/v1/message/messageStatus/${id}`);
+    const response = await backendApiClient.put(`/chats/api/v1/message/messageStatus/${id}`);
     console.log(`Updating message with id ${id}` + response)
     return response.data;
   } catch (error) {
@@ -22,7 +22,7 @@ export const updateMessageStatusById = async (id) => {
 
 export const deleteMessageById = async (id) => {
   try {
-    const response = await backendApiClient.put(`/chats/api/v1/message/${id}`);
+    const response = await backendApiClient.delete(`/chats/api/v1/message/${id}`);
     console.log(`Deleting message with id ${id}` + response)
     return response.data;
   } catch (error) {
@@ -31,13 +31,10 @@ export const deleteMessageById = async (id) => {
 };
 
 export const getChatBetweenUsersByWriterUserIdAndReceiverUserId = async (writerUserId, receiverUserId) => {
-  try {
-    const response = await backendApiClient.delete(`/feeds/api/v1/interestFilter/${writerUserId}/${receiverUserId}`);
-    console.log(`Getting chat betweem writerUserId: ${data.writerUserId} and receiverUserId: ${data.receiverUserId}` + response)
-    return response.data;
-  } catch (error) {
-    return null
-  }
+    const response = await backendApiClient.get(`/chats/api/v1/chat/${writerUserId}/${receiverUserId}`);
+    console.log(`Getting chat between writerUserId: ${writerUserId} and receiverUserId: ${receiverUserId}`, response.data?.data);
+    
+    return response.data?.data;
 };
 
 export default {

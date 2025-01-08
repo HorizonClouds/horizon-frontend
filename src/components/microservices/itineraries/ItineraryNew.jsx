@@ -19,6 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import GoToLogin from '@/components/common/GoToLogin';
 
 const ItineraryNew = ({ mode }) => {
   const { itineraryId } = useParams();
@@ -81,8 +82,8 @@ const ItineraryNew = ({ mode }) => {
   };
 
   console.log(`ItineraryNew mode: ${mode}, loggedInUser: ${loggedInUser?.id}`);
-  if (mode === 'new' && loggedInUser?.id === undefined) {
-    return <div>Please log in to create a new itinerary.</div>;
+  if (!loggedInUser?.id) {
+    return <GoToLogin />;
   }
 
   return (

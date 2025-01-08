@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -37,10 +37,6 @@ const UserNavbar = () => {
             console.error('Login failed', error);
         }
     };
-
-    useEffect(() => {
-        setCurrentUser(usersService.getLoggedUser()?.id);
-    }, []);
 
     return (
         <DropdownMenu>

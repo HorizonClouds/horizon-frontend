@@ -9,6 +9,9 @@ import ExploreView from '../microservices/publications/ExploreView';
 import ApiDocsView from './ApiDocsView';
 import InterestFilterFormView from '../microservices/feeds/InterestFilterFormView';
 import { UserContextProvider } from '@/contexts/UserContext';
+import Chat from '../microservices/chats/Chat';
+import Chats from '../microservices/chats/Chats';
+import Pricing from './Pricing';
 
 const App = () => {
   return (
@@ -16,15 +19,15 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           {/* HOME */}
-          <Route path="/" element={<HomeView />} />
+          <Route path="/" element={<View> <ItinerariesFeedView /></View>} />
           
           {/*Añadir todas las rutas de los microservicios aquí*/}
           {/*FEEDS*/}
           <Route path="/itineraries-feed" element={<View> <ItinerariesFeedView /></View>} />
           <Route path="/interest-filters/:userId" element={<View><InterestFilterFormView /></View>} />
           {/*CHATS*/}
-          <Route path="/chats" element={<ItinerariesFeedView />} />
-          <Route path="/chats/:writerUserId/:receiverUserId" element={<ItinerariesFeedView />} />
+          <Route path="/chats" element={<View><Chats /></View>} />
+          <Route path="/chats/:userId" element={<View><Chat /></View>} />
           {/* ITINERARIES */}
           <Route path="/itineraries/new" element={<View> <ItineraryNew mode="new" /> </View>} />
           <Route path="/itineraries/:itineraryId" element={<View> <ItineraryDetail /> </View>} />
@@ -33,6 +36,8 @@ const App = () => {
           <Route path="/explore" element={<View><ExploreView /></View>} />
           {/* API DOCS */}
           <Route path="/api-docs" element={<View> <ApiDocsView /> </View>} />
+          {/* PRICING */}
+          <Route path="/pricing" element={<View> <Pricing /> </View>} />
         </Routes>
       </BrowserRouter>
     </UserContextProvider>
