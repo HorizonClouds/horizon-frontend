@@ -1,7 +1,7 @@
-import React, { useContext } from 'react'
-import { Button } from "@/components/ui/button"
+import React, { useContext } from 'react';
+import { Button } from "@/components/ui/button";
 import { Home, List, Compass, User, MessageSquare, Gem } from 'lucide-react';
-import UserNavbar from '../microservices/users/UserNavbar'
+import UserNavbar from '../microservices/users/UserNavbar';
 import { Link } from 'react-router-dom';
 import { UserContext } from '@/contexts/UserContext';
 
@@ -22,41 +22,58 @@ const Navbar = () => {
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
+          {/* Logo and Navigation */}
           <div className="flex">
             <Link to="/itineraries-feed" className="flex-shrink-0 flex items-center">
               <span className="font-bold text-xl text-blue-600">HorizonClouds</span>
             </Link>
           </div>
+
           <div className="flex">
+            {/* Feed Link */}
             <Link to="/itineraries-feed" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
               <List className="w-5 h-5 mr-1" />
               Feed
             </Link>
-            {/* chats */}
+
+            {/* Chats Link */}
             <Link to="/chats" className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
               <MessageSquare className="w-5 h-5 mr-1" />
               Chats
             </Link>
+
+            {/* Explore Link */}
             <Link to="/explore" className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
               <Compass className="w-5 h-5 mr-1" />
               Explore
             </Link>
+
+            {/* Analytics Link */}
             <Link to="/analyticsReports" className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
               <Compass className="w-5 h-5 mr-1" />
               Analytics
             </Link>
+
+            {/* Notifications Link */}
             <Link to="/notifications" className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
               <Compass className="w-5 h-5 mr-1" />
               Notifications
+            </Link>
+
+            {/* Pricing Link */}
             <Link to="/pricing" className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
-              < Gem className="w-5 h-5 mr-1" />
+              <Gem className="w-5 h-5 mr-1" />
               Pricing
             </Link>
           </div>
+
           <div className="flex">
+            {/* API Docs Link */}
             <Link to='/api-docs' className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
               <Button>API Docs</Button>
             </Link>
+
+            {/* User Navbar */}
             <div className="ml-8 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
               <UserNavbar />
             </div>
@@ -67,5 +84,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar
-
+export default Navbar;
