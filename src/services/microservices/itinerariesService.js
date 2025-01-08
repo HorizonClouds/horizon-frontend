@@ -244,10 +244,10 @@ async function TEST_ALL(realUser = false) {
   if (realUser) {
     console.log('USING REAL USER:');
     // Create a new itinerary
-    user = usersService.getLoggedUser();
+    user = usersService.getLoggedUser()?.id;
   } else {
     console.log('USING MOCK USER1:');
-    user = await usersService.postLogin({ userId: "user1", password: "password1" });
+    user = await usersService.postLogin({ userId: user, password: "password1" });
   }
   const newItinerary = {
     name: 'Vacation in Hawaii',
