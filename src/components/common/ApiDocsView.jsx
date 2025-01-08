@@ -33,6 +33,13 @@ const ApiDocsView = () => {
             <li><a href={`${config.gatewayURL}/publications/api-docs/#/`} target="_blank" rel="noopener noreferrer" className="text-blue-500">Publications</a></li>
           </ul>
         </li>
+        <li>
+          <b>Ismael y Juan</b>
+          <ul className="list-disc list-inside ml-4">
+            <li><a href={`${config.gatewayURL}/analyticsReports/api-docs/#/`} target="_blank" rel="noopener noreferrer" className="text-blue-500">Analytics Reports</a></li>
+            <li><a href={`${config.gatewayURL}/notifications/api-docs/#/`} target="_blank" rel="noopener noreferrer" className="text-blue-500">Notifications</a></li>
+          </ul>
+        </li>
       </ul>
     </div>
   );
