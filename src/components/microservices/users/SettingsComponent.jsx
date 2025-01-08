@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Loader2, Clock, KeyRound } from 'lucide-react';
 import userService from '@/services/microservices/userService';
+import loginHistoryService from '@/services/microservices/loginHistoryService';
 import passwordRecoveryService from '@/services/microservices/passwordRecoveryService';
 
 const SettingsComponent = () => {
@@ -61,7 +62,7 @@ const SettingsComponent = () => {
         throw new Error('No user ID found');
       }
       
-      const response = await userService.getLoginHistory(userId);
+      const response = await loginHistoryService.getLoginHistory(userId);
       const historyData = Array.isArray(response.data) ? response.data : [response.data];
       setLoginHistory(historyData);
     } catch (err) {
