@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Navbar from './Navbar'
 import ItineraryCard from '../microservices/itineraries/ItineraryCard'
 import feedsService from '@/services/microservices/feedsService'
 import usersService from '@/services/microservices/usersService'
-import axios from 'axios'
 import itinerariesService from '@/services/microservices/itinerariesService'
-import ItinerariesFeedView from '../microservices/feeds/ItinerariesFeedView'
-import ItineraryDetail from '../microservices/itineraries/ItineraryDetail'
+import ItinerariesFeedView from "../microservices/feeds/ItinerariesFeedView"
+import ItineraryDetail from "../microservices/itineraries/ItineraryDetail"
+import AuthComponent from "../microservices/users/AuthComponent"
 
 const MOCK_ITINERARIES = [
   {
@@ -39,47 +39,16 @@ const MOCK_ITINERARIES = [
   }
 ]
 
-const logger = console;
-
-const testFeedsService = async () => {
-  try {
-
-    const user = await usersService.postLogin({ userId: "user2", password: "password2" });
-    logger.log('Logged in user:', user);
-    logger.log('CALL TO ITINERARIES');
-    const iti = await axios.get('http://localhost:6900/api/v1/itineraries/api/v1/itineraries');
-    logger.log('Itineraries:', iti.data);
-    // Create Interest Filter
-    const newFilter = await feedsService.createInterestFilter({ userId: usersService.getLoggedUser()?.id, categoryList: ["RELAX", "ADVENTURE"] });
-    logger.log('Created Interest Filter:', newFilter);
-
-    // Get Interest Filter by User ID
-    const interestFilter = await feedsService.getInterestFilterByUserId("000000000000000000000001");
-    logger.log('Fetched Interest Filter:', interestFilter);
-
-    // Update Interest Filter
-    const updatedFilter = await feedsService.updateInterestFilterByUserId("000000000000000000000001", { categoryList: ["CITY", "ADVENTURE"] });
-    logger.log('Updated Interest Filter:', updatedFilter);
-
-    // Delete Interest Filter
-    const deleteResponse = await feedsService.deleteInterestFilterById(newFilter._id);
-    logger.log('Deleted Interest Filter:', deleteResponse);
-  } catch (error) {
-    logger.error('Error testing feeds service:', error);
+const HomeView = ({ user, onLogin, onLogout }) => {
+  if (!user) {
+    return <AuthComponent onLogin={onLogin} />;
   }
-};
-// testFeedsService();
-
-const HomeView = () => {
-  useEffect(() => {
-
-
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <Navbar user={user} onLogout={onLogout} />
       <main className="max-w-2xl mx-auto py-8 px-4">
+        <h1 className="text-2xl font-bold mb-4">Welcome, {user.name}!</h1>
         <ItineraryDetail itinerary={MOCK_ITINERARIES[0]} userAddons={{}} />
         <ItinerariesFeedView />
         <button
@@ -94,3 +63,4 @@ const HomeView = () => {
 }
 
 export default HomeView
+
