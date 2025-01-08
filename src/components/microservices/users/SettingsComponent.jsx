@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Loader2, Clock } from 'lucide-react';
+import { Loader2, Clock, KeyRound } from 'lucide-react';
 import userService from '@/services/microservices/userService';
 import loginHistoryService from '@/services/microservices/loginHistoryService';
+import passwordRecoveryService from '@/services/microservices/passwordRecoveryService';
 
 const SettingsComponent = () => {
   const [loading, setLoading] = useState(true);
@@ -13,6 +14,15 @@ const SettingsComponent = () => {
   const [success, setSuccess] = useState('');
   const [loginHistory, setLoginHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
   const [userData, setUserData] = useState({
     name: '',
     photo: '',
@@ -53,7 +63,6 @@ const SettingsComponent = () => {
       }
       
       const response = await loginHistoryService.getLoginHistory(userId);
-      // Asegurarnos de que response.data es un array, si no lo es, lo convertimos en array
       const historyData = Array.isArray(response.data) ? response.data : [response.data];
       setLoginHistory(historyData);
     } catch (err) {
@@ -83,6 +92,45 @@ const SettingsComponent = () => {
       setError(err.response?.data?.message || 'Error updating profile');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    // Validate passwords match
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+
+    // Validate password is not empty
+    if (!passwordData.currentPassword || !passwordData.newPassword) {
+      setPasswordError('All fields are required');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      await passwordRecoveryService.changePassword(
+        passwordData.currentPassword,
+        passwordData.newPassword
+      );
+      
+      setPasswordSuccess('Password changed successfully');
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+      setShowPasswordForm(false);
+    } catch (err) {
+      console.error('Error changing password:', err);
+      setPasswordError(err.response?.data?.message || 'Error changing password');
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -197,6 +245,107 @@ const SettingsComponent = () => {
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <KeyRound className="h-5 w-5" />
+            Change Password
+          </CardTitle>
+          <CardDescription>
+            Update your account password
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!showPasswordForm ? (
+            <Button 
+              onClick={() => setShowPasswordForm(true)}
+              variant="outline"
+            >
+              Change Password
+            </Button>
+          ) : (
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              {passwordError && (
+                <div className="bg-destructive/15 text-destructive p-3 rounded-md">
+                  {passwordError}
+                </div>
+              )}
+              {passwordSuccess && (
+                <div className="bg-green-100 text-green-800 p-3 rounded-md">
+                  {passwordSuccess}
+                </div>
+              )}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Current Password</label>
+                <Input
+                  type="password"
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData(prev => ({
+                    ...prev,
+                    currentPassword: e.target.value
+                  }))}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">New Password</label>
+                <Input
+                  type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData(prev => ({
+                    ...prev,
+                    newPassword: e.target.value
+                  }))}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Confirm New Password</label>
+                <Input
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData(prev => ({
+                    ...prev,
+                    confirmPassword: e.target.value
+                  }))}
+                  required
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  type="submit" 
+                  disabled={changingPassword}
+                >
+                  {changingPassword ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Changing...
+                    </>
+                  ) : (
+                    'Update Password'
+                  )}
+                </Button>
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowPasswordForm(false);
+                    setPasswordData({
+                      currentPassword: '',
+                      newPassword: '',
+                      confirmPassword: ''
+                    });
+                    setPasswordError('');
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          )}
         </CardContent>
       </Card>
 
