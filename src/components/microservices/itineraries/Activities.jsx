@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MapPin, Calendar, Plus, Cloud } from 'lucide-react';
+import { MapPin, Calendar, Plus, Cloud, Trash } from 'lucide-react';
 import MapComponent from './MapComponent';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-const Activities = ({ activities, onAddActivity, userAddons }) => {
+const Activities = ({ activities, onAddActivity, onDeleteActivity, userAddons, loggedInUser }) => {
   const [showAddForm, setShowAddForm] = useState(false);
 
   const form = useForm({
@@ -51,9 +51,13 @@ const Activities = ({ activities, onAddActivity, userAddons }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <Button onClick={() => setShowAddForm(!showAddForm)}>
-          <Plus className="w-4 h-4 mr-1" /> Add Activity
-        </Button>
+        {loggedInUser ? (
+          <Button onClick={() => setShowAddForm(!showAddForm)}>
+            <Plus className="w-4 h-4 mr-1" /> Add Activity
+          </Button>
+        ) : (
+          <p className="text-gray-500">Login to add an activity</p>
+        )}
       </div>
       {showAddForm && (
         <Card className="mb-4">
@@ -158,30 +162,45 @@ const Activities = ({ activities, onAddActivity, userAddons }) => {
           </CardContent>
         </Card>
       )}
-      <ScrollArea className="h-60 pr-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1' }}>
-        {activities.map((activity) => (
-          <Card key={activity._id} className="mb-2">
-            <CardContent className="p-4">
-              <h4 className="font-semibold">{activity.name}</h4>
-              <p className="text-sm text-gray-500">{activity.description}</p>
-              <div className="flex items-center mt-2 text-xs text-gray-500">
-                <Calendar className="w-3 h-3 mr-1" />
-                <span>{new Date(activity.startDate).toLocaleString()} - {new Date(activity.endDate).toLocaleString()}</span>
-              </div>
-              <div className="flex items-center mt-2 text-xs text-gray-500">
-                <MapPin className="w-3 h-3 mr-1" />
-                <span>{activity.location?.address}</span>
-              </div>
-              {/* user addons includes */}
-              {true && (
-                <div className="flex items-center mt-2 text-xs text-gray-500">
-                  <Cloud className="w-3 h-3 mr-1" />
-                  <span>Weather: Loading...</span>
+      <ScrollArea className="h-60 pr-4 flex flex-col" style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1', 'height': 'min-content' }}>
+        {activities.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">Nothing here yet.</p>
+          </div>
+        ) : (
+          activities.map((activity, index) => (
+            <Card key={index} className="mb-2 flex">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{activity.name}</h4>
+                    <p className="text-sm text-gray-500">{activity.description}</p>
+                    <div className="flex items-center mt-2 text-xs text-gray-500">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      <span>{new Date(activity.startDate).toLocaleString()} - {new Date(activity.endDate).toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center mt-2 text-xs text-gray-500">
+                      <MapPin className="w-3 h-3 mr-1" />
+                      <span>{activity.location?.address}</span>
+                    </div>
+                    {/* user addons includes */}
+                    {true && (
+                      <div className="flex items-center mt-2 text-xs text-gray-500">
+                        <Cloud className="w-3 h-3 mr-1" />
+                        <span>Weather: Loading...</span>
+                      </div>
+                    )}
+                  </div>
+                  {loggedInUser && loggedInUser.id === activity.userId && (
+                    <Button variant="danger" onClick={() => onDeleteActivity(activity._id)} className="ml-2">
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </ScrollArea>
     </div>
   );

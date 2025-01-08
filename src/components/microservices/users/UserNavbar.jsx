@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -12,21 +12,25 @@ import {
 import { User } from 'lucide-react'
 import usersService from '@/services/microservices/usersService';
 import feedsService from '@/services/microservices/feedsService';
+import { UserContext } from '@/contexts/UserContext';
 
 const UserNavbar = () => {
+    const { setLoggedInUser } = useContext(UserContext);
     const [currentUser, setCurrentUser] = useState(usersService.getLoggedUser()?.id);
 
     const handleUserLogin = async (userId, password) => {
         try {
             await usersService.postLogin({ userId, password });
-            setCurrentUser(usersService.getLoggedUser()?.id);
+            const user = usersService.getLoggedUser();
+            setCurrentUser(user?.id);
+            setLoggedInUser(user);
             const initialInterestFilter = { 
-                userId: usersService.getLoggedUser().id,
+                userId: user.id,
                 categoryList: []
             }
             await feedsService.createInterestFilter(initialInterestFilter);
             const initialItinerariesFeed = {
-                userId: usersService.getLoggedUser().id
+                userId: user.id
             }
             await feedsService.createItinerariesFeed(initialItinerariesFeed);
         } catch (error) {

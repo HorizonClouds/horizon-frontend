@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Star, Plus } from 'lucide-react';
+import { Star, Plus, Trash } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { reviewSchema } from './itinerariesFormsValidators';
 import { Form, FormControl, FormItem, FormLabel, FormMessage, FormField } from "@/components/ui/form";
 
-const Reviews = ({ reviews, onAddReview }) => {
+const Reviews = ({ reviews, onAddReview, onDeleteReview, loggedInUser }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const form = useForm({
     resolver: zodResolver(reviewSchema),
@@ -31,9 +31,13 @@ const Reviews = ({ reviews, onAddReview }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <Button onClick={() => setShowAddForm(!showAddForm)}>
-          <Plus className="w-4 h-4 mr-1" /> Add Review
-        </Button>
+        {loggedInUser ? (
+          <Button onClick={() => setShowAddForm(!showAddForm)}>
+            <Plus className="w-4 h-4 mr-1" /> Add Review
+          </Button>
+        ) : (
+          <p className="text-gray-500">Login to add a review</p>
+        )}
       </div>
       {showAddForm && (
         <Card className="mb-4">
@@ -100,9 +104,9 @@ const Reviews = ({ reviews, onAddReview }) => {
           </CardContent>
         </Card>
       )}
-      <ScrollArea className="h-60 pr-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1' }}>
-        {reviews.map((review) => (
-          <Card key={review._id} className="mb-2">
+      <ScrollArea className="h-60 pr-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#888 #f1f1f1' , 'height': 'min-content' }}>
+        {reviews.map((review, index) => (
+          <Card key={index} className="mb-2">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
@@ -115,6 +119,11 @@ const Reviews = ({ reviews, onAddReview }) => {
                 <div className="flex items-center">
                   <Star className="w-4 h-4 text-yellow-400 mr-1" />
                   <span>{review.score}</span>
+                  {loggedInUser && loggedInUser.id === review.userId && (
+                    <Button variant="danger" onClick={() => onDeleteReview(review._id)} className="ml-2">
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
               <p className="text-sm">{review.message}</p>

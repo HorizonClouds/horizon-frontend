@@ -1,10 +1,23 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Button } from "@/components/ui/button"
 import { Home, List, Compass, User } from 'lucide-react';
 import UserNavbar from '../microservices/users/UserNavbar'
 import { Link } from 'react-router-dom';
+import { UserContext } from '@/contexts/UserContext';
 
 const Navbar = () => {
+  const { setLoggedInUser } = useContext(UserContext);
+
+  const handleUserLogin = async (userId, password) => {
+    try {
+      await usersService.postLogin({ userId, password });
+      const user = usersService.getLoggedUser();
+      setLoggedInUser(user);
+    } catch (error) {
+      console.error('Login failed', error);
+    }
+  };
+
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
