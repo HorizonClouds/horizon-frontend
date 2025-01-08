@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Link } from 'react-router-dom';
 
 const Activities = ({ activities, onAddActivity, onDeleteActivity, userAddons, loggedInUser }) => {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -187,7 +188,7 @@ const Activities = ({ activities, onAddActivity, onDeleteActivity, userAddons, l
                     {true && (
                       <div className="flex items-center mt-2 text-xs text-gray-500">
                         <Cloud className="w-3 h-3 mr-1" />
-                        <span>Weather: Loading...</span>
+                        <Link to={`/forecast/${activity.itineraryId}/${activity._id}`}>Weather Forecast</Link>
                       </div>
                     )}
                   </div>
