@@ -101,43 +101,43 @@ function AnalyticsDashboard() {
 
   const trendData = analytics.length > 0
     ? analytics.map(analytic => ({
-        date: new Date(analytic.analysisDate).toLocaleDateString(),
-        comments: analytic.userItineraryAnalytic?.totalCommentsCount || 0,
-        reviews: analytic.userItineraryAnalytic?.totalReviewsCount || 0,
-        score: analytic.userItineraryAnalytic?.averageReviewScore || 0
-      })).reverse()
+      date: new Date(analytic.analysisDate).toLocaleDateString(),
+      comments: analytic.userItineraryAnalytic?.totalCommentsCount || 0,
+      reviews: analytic.userItineraryAnalytic?.totalReviewsCount || 0,
+      score: analytic.userItineraryAnalytic?.averageReviewScore || 0
+    })).reverse()
     : emptyTrendData;
 
   if (error) {
     return (
       <div className="flex h-screen bg-background">
-      {/* Sidebar panel */}
-      <Card className="w-[350px] rounded-none h-full">
-        <CardHeader className="px-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl font-semibold">Analytics History</CardTitle>
-              <CardDescription>Select a date to view details</CardDescription>
+        {/* Sidebar panel */}
+        <Card className="w-[350px] rounded-none h-full">
+          <CardHeader className="px-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl font-semibold">Analytics History</CardTitle>
+                <CardDescription>Select a date to view details</CardDescription>
+              </div>
+              <Button
+                onClick={updateAnalytics}
+                disabled={updating}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${updating ? 'animate-spin' : ''}`} />
+                {updating ? 'Updating...' : 'Update Analytics'}
+              </Button>
             </div>
-            <Button
-              onClick={updateAnalytics}
-              disabled={updating}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${updating ? 'animate-spin' : ''}`} />
-              {updating ? 'Updating...' : 'Update Analytics'}
-            </Button>
-          </div>
-        </CardHeader>
+          </CardHeader>
 
-      </Card>
+        </Card>
 
-      {/* Main panel */}
-      <div className="flex-1">
-        {/* All the other sections as in your code */}
+        {/* Main panel */}
+        <div className="flex-1">
+          {/* All the other sections as in your code */}
+        </div>
+        <Toaster />
       </div>
-      <Toaster />
-    </div>
     );
   }
 
@@ -326,7 +326,8 @@ function AnalyticsDashboard() {
                   Itinerary with highest score and engagement
                 </CardDescription>
               </div>
-              <ReportButton />
+              <ReportButton
+                resourceId={selectedAnalytic?._id} />
             </CardHeader>
             <CardContent>
               {loading ? (
