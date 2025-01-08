@@ -1,45 +1,42 @@
-import HomeView from './HomeView';
-import View from './ViewWrapper';
-import Chat from '../microservices/chats/Chat';
-import Chats from '../microservices/chats/Chats';
-import Pricing from './Pricing';
 import React, { useState } from 'react';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 
-// Components
+import HomeView from './HomeView';
+import View from './ViewWrapper';
+import Pricing from './Pricing';
+import ApiDocsView from './ApiDocsView';
 import ViewWrapperAnalytics from './ViewWrapperAnalytics';
+
+// Microservices Components
+import Chat from '../microservices/chats/Chat';
+import Chats from '../microservices/chats/Chats';
 import ProfileComponent from "../microservices/users/ProfileComponent";
 import SettingsComponent from "../microservices/users/SettingsComponent";
 import FriendsComponent from "../microservices/users/FriendsComponent";
 import ItinerariesFeedView from "../microservices/feeds/ItinerariesFeedView";
+import InterestFilterFormView from '../microservices/feeds/InterestFilterFormView';
 import ItineraryDetail from "../microservices/itineraries/ItineraryDetail";
 import ItineraryNew from "../microservices/itineraries/ItineraryNew";
-import ExploreView from "../microservices/publications/ExploreView";
-import ApiDocsView from './ApiDocsView';
-import InterestFilterFormView from '../microservices/feeds/InterestFilterFormView';
-import { UserContextProvider } from '@/contexts/UserContext';
 import Forecast from '../microservices/itineraries/Forecast';
-
+import ExploreView from "../microservices/publications/ExploreView";
 import AnalyticsView from '../microservices/analytics/analytics-dashboard';
-import ReportForm from '../microservices/reports/report-form.jsx';
-import NotificationsPage from '../common/ViewWrapperNotifications.jsx';
+import ReportForm from '../microservices/reports/report-form';
+import NotificationsPage from '../common/ViewWrapperNotifications';
+
+// Context
+import { UserContextProvider } from '@/contexts/UserContext';
 
 const App = () => {
   const [user, setUser] = useState(null);
 
-  const handleLogin = (userData) => {
-    setUser(userData);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-  };
+  const handleLogin = (userData) => setUser(userData);
+  const handleLogout = () => setUser(null);
 
   return (
     <UserContextProvider>
       <BrowserRouter>
         <Routes>
-          {/* HOME - Login/Register or Main content */}
+          {/* Home */}
           <Route path="/" element={<HomeView user={user} onLogin={handleLogin} onLogout={handleLogout} />} />
 
           {/* Profile */}
@@ -58,32 +55,27 @@ const App = () => {
             element={user ? <View><FriendsComponent /></View> : <Navigate to="/login" />}
           />
 
-          {/* Microservices Routes */}
-          {/* FEEDS */}
+          {/* Feeds */}
           <Route path="/itineraries-feed" element={<View><ItinerariesFeedView /></View>} />
           <Route path="/interest-filters/:userId" element={<View><InterestFilterFormView /></View>} />
 
-          {/* CHATS */}
+          {/* Chats */}
           <Route path="/chats" element={<View><Chats /></View>} />
           <Route path="/chats/:userId" element={<View><Chat /></View>} />
 
-          {/* ITINERARIES */}
-          <Route path="/itineraries/new" element={<View> <ItineraryNew mode="new" /> </View>} />
-          <Route path="/itineraries/:itineraryId" element={<View> <ItineraryDetail /> </View>} />
-          <Route path="/itineraries/:itineraryId/edit" element={<View> <ItineraryNew mode="update" /> </View>} />
-          {/* FORECAST */}
-          <Route path="/forecast/:itineraryId/:activityId" element={<View><Forecast /></View>} />
+          {/* Itineraries */}
           <Route path="/itineraries/new" element={<View><ItineraryNew mode="new" /></View>} />
           <Route path="/itineraries/:itineraryId" element={<View><ItineraryDetail /></View>} />
           <Route path="/itineraries/:itineraryId/edit" element={<View><ItineraryNew mode="update" /></View>} />
+          <Route path="/forecast/:itineraryId/:activityId" element={<View><Forecast /></View>} />
 
-          {/* PUBLICATIONS */}
+          {/* Publications */}
           <Route path="/explore" element={<View><ExploreView /></View>} />
 
-          {/* API DOCS */}
+          {/* API Docs */}
           <Route path="/api-docs" element={<View><ApiDocsView /></View>} />
 
-          {/* PRICING */}
+          {/* Pricing */}
           <Route path="/pricing" element={<View><Pricing /></View>} />
 
           {/* Analytics */}
