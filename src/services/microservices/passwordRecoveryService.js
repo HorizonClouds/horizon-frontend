@@ -1,16 +1,24 @@
 import backendApiClient from '../utils/apiClient.js';
 
-export const requestPasswordRecovery = async (email) => {
-  const response = await backendApiClient.post('/password/api/v1/recovery-request', { email });
-  return response.data;
+const passwordRecoveryService = {
+  changePassword: async (currentPassword, newPassword) => {
+    try {
+      const userId = localStorage.getItem('user-id');
+      if (!userId) {
+        throw new Error('No user ID found');
+      }
+
+      const response = await backendApiClient.put('users/api/v1/password/change', {
+        userId,
+        currentPassword,
+        newPassword
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Change password error:', error);
+      throw error;
+    }
+  }
 };
 
-export const resetPassword = async (token, newPassword) => {
-  const response = await backendApiClient.post('/password/api/v1/reset-password', { token, newPassword });
-  return response.data;
-};
-
-export default {
-  requestPasswordRecovery,
-  resetPassword
-};
+export default passwordRecoveryService;
