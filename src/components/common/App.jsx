@@ -39,17 +39,17 @@ const App = () => {
           {/* Profile */}
           <Route
             path="/profile"
-            element={user ? <View><ProfileComponent user={user} /></View> : <Navigate to="/" />}
+            element={user ? <View><ProfileComponent user={user} /></View> : <Navigate to="/login" />}
           />
 
           {/* Settings */}
           <Route
             path="/settings"
-            element={user ? <View><SettingsComponent user={user} /></View> : <Navigate to="/" />}
+            element={user ? <View><SettingsComponent user={user} /></View> : <Navigate to="/login" />}
           />
           <Route
             path="/friends"
-            element={user ? <View><FriendsComponent /></View> : <Navigate to="/" />}
+            element={user ? <View><FriendsComponent /></View> : <Navigate to="/login" />}
           />
 
           {/*Añadir todas las rutas de los microservicios aquí*/}
