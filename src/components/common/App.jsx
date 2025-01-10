@@ -14,7 +14,7 @@ import ProfileComponent from "../microservices/users/ProfileComponent";
 import SettingsComponent from "../microservices/users/SettingsComponent";
 import FriendsComponent from "../microservices/users/FriendsComponent";
 import ItinerariesFeedView from "../microservices/feeds/ItinerariesFeedView";
-import InterestFilterFormView from '../microservices/feeds/InterestFilterFormView';
+import InterestFilterFormView from '../microservices/feeds/interestFilterFormView';
 import ItineraryDetail from "../microservices/itineraries/ItineraryDetail";
 import ItineraryNew from "../microservices/itineraries/ItineraryNew";
 import Forecast from '../microservices/itineraries/Forecast';
@@ -36,8 +36,9 @@ const App = () => {
     <UserContextProvider>
       <BrowserRouter>
         <Routes>
-          {/* Home */}
-          <Route path="/" element={<HomeView user={user} onLogin={handleLogin} onLogout={handleLogout} />} />
+          <Route path="/" element={<View> <ItinerariesFeedView /></View>} />
+          {/* HOME - Login/Register or Main content */}
+          <Route path="/login" element={<HomeView user={user} onLogin={handleLogin} onLogout={handleLogout} />} />
 
           {/* Profile */}
           <Route
