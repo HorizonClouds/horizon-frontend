@@ -31,7 +31,7 @@ function AnalyticsDashboard() {
       }
       const data = await analyticsService.getAnalyticsByUserId(userId);
       setAnalytics(data || []);
-      setSelectedAnalytic(data?.[0] || null);
+      setSelectedAnalytic(data || null);
       setError(null);
     } catch (err) {
       console.error('Error fetching analytics:', err);

@@ -3,7 +3,7 @@ name: Generate a develop version in Docker Hub
 on:
   push:
     branches:
-      - developnt
+      - develop
 
 jobs:
   upload-to-docker-hub:
