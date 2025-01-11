@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -14,6 +14,8 @@ import { DeleteAnalyticButton } from "./delete-analytic-button.jsx";
 import usersService from '../../../services/microservices/usersService.js';
 
 import { EmptyState } from "./empty-state";
+import { UserContext } from "@/contexts/UserContext.jsx";
+import GoToLogin from "@/components/common/GoToLogin.jsx";
 
 function AnalyticsDashboard() {
   const [analytics, setAnalytics] = useState([]);
@@ -21,6 +23,7 @@ function AnalyticsDashboard() {
   const [error, setError] = useState(null);
   const [selectedAnalytic, setSelectedAnalytic] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const { loggedInUser } = useContext(UserContext);
 
   const fetchAnalytics = async () => {
     try {
@@ -45,8 +48,11 @@ function AnalyticsDashboard() {
 
   useEffect(() => {
     fetchAnalytics();
-  }, []);
+  }, [loggedInUser]);
 
+if (!loggedInUser?.id) {
+    return <GoToLogin />;
+}
   const updateAnalytics = async () => {
     try {
       setUpdating(true);

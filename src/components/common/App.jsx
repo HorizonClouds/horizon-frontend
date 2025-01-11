@@ -82,15 +82,15 @@ const App = () => {
           {/* Analytics */}
           <Route
             path="/analyticsReports"
-            element={user ? <ViewWrapperAnalytics><AnalyticsView /></ViewWrapperAnalytics> : <Navigate to="/" />}
+            element={<ViewWrapperAnalytics><AnalyticsView /></ViewWrapperAnalytics>}
           />
           <Route
             path="/report"
-            element={user ? <ViewWrapperAnalytics><ReportForm /></ViewWrapperAnalytics> : <Navigate to="/" />}
+            element={<ViewWrapperAnalytics><ReportForm /></ViewWrapperAnalytics>}
           />
           <Route
             path="/notifications"
-            element={user ? <ViewWrapperAnalytics><NotificationsPage /></ViewWrapperAnalytics> : <Navigate to="/" />}
+            element={<ViewWrapperAnalytics><NotificationsPage /></ViewWrapperAnalytics>}
           />
         </Routes>
       </BrowserRouter>

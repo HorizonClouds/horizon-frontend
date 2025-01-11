@@ -1,16 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { getAllNotifications, markNotificationAsSeen } from '../../../services/microservices/notificationService.js'
 import NotificationItem from './notification-item'
 import { toast } from 'sonner'
+import GoToLogin from '@/components/common/GoToLogin.jsx'
+import { UserContext } from '@/contexts/UserContext.jsx'
 
 export function NotificationsList() {
+  const { loggedInUser } = useContext(UserContext);
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchNotifications()
-  }, [])
-
   const fetchNotifications = async () => {
     try {
       setLoading(true)
@@ -23,6 +21,15 @@ export function NotificationsList() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    fetchNotifications()
+  }, [loggedInUser])
+
+  if (!loggedInUser?.id) {
+    return <GoToLogin />;
+}
+
 
   const handleMarkAsSeen = async (notificationId) => {
     try {
@@ -63,4 +70,3 @@ export function NotificationsList() {
     </div>
   )
 }
-
