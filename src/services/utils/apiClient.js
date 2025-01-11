@@ -1,12 +1,17 @@
 import config from '@/config';
 import axios from 'axios';
 
+// Remove /frontend from the base URL
+const gatewayURL = config.gatewayURL.replace('/frontend', '');
+
 const backendApiClient = axios.create({
-    baseURL: config.gatewayURL,
+    baseURL: gatewayURL,
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
+console.log('gatewayURL', gatewayURL);
 
 backendApiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('horizon-token');

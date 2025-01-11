@@ -5,6 +5,7 @@ import path from 'path' // Importar el módulo path
 
 export default defineConfig({
   plugins: [react()],
+  base: '/api/v1/frontend/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

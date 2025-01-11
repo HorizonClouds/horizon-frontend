@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import GoToLogin from '@/components/common/GoToLogin';
+import config from '@/config';
 
 const ItineraryNew = ({ mode }) => {
   const { itineraryId } = useParams();
@@ -71,10 +72,10 @@ const ItineraryNew = ({ mode }) => {
     try {
       if (mode === 'new') {
         const createdItinerary = await createItinerary(data);
-        window.location.href = `/itineraries/${createdItinerary._id}`;
+        window.location.href = `/api/v1/frontend/itineraries/${createdItinerary._id}`;
       } else {
         await updateItineraryById(itineraryId, data);
-        window.location.href = `/itineraries/${itineraryId}`;
+        window.location.href = `/api/v1/frontend/itineraries/${itineraryId}`;
       }
     } catch (err) {
       console.error('Failed to save itinerary', err);

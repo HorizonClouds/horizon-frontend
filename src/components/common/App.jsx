@@ -34,7 +34,7 @@ const App = () => {
 
   return (
     <UserContextProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/api/v1/frontend">
         <Routes>
           <Route path="/" element={<View> <ItinerariesFeedView /></View>} />
           {/* HOME - Login/Register or Main content */}
